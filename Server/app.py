@@ -4,6 +4,13 @@ from flask_cors import CORS
 import os
 import tempfile
 from Pfeature import aac_wp, pcp_wp, ser_wp, sep_wp
+import pandas as pd
+import pickle
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 
 load_dotenv()
 
@@ -12,14 +19,16 @@ cors_origin = os.getenv("FLASK_CORS_ORIGIN", "*")
 app = Flask(__name__)
 CORS(app, origins=[cors_origin], methods=["GET", "POST", "OPTIONS"])
 
-import pandas as pd
-from flask import Flask, request, jsonify
+with open('trained_model.pkl', 'rb') as f:
+    model, trained_columns = pickle.load(f)
 
 
 @app.route('/api/detect-protein', methods=['POST'])
 def detect_protein():
+    logger.debug("Received request for protein detection.")
     data = request.json
     sequence = data.get('sequence')
+    logger.debug(f"Request data: {data}")
     fasta_content = convert_to_fasta(sequence)
     fasta_file_path = save_fasta_to_file(fasta_content)
     output_aac = "output_aac.csv"
@@ -35,14 +44,18 @@ def detect_protein():
     df_ser = pd.read_csv(output_ser)
     df_sep = pd.read_csv(output_sep)
     merged_df = pd.concat([df_aac, df_pcp, df_ser, df_sep], axis=1)
-    merged_output = "merged_output.csv"
-    merged_df.to_csv(merged_output, index=False)
     os.remove(output_aac)
     os.remove(output_pcp)
     os.remove(output_ser)
     os.remove(output_sep)
+    os.remove(fasta_file_path)
+    X_merged = merged_df[trained_columns]
+    y_pred = model.predict(X_merged)
+    label_map = {0: 'NEGATIVE', 1: 'POSITIVE'}
+    y_pred_labels = [label_map[label] for label in y_pred]
+    logger.info(y_pred_labels[0])
     return jsonify({
-        "merged_output": merged_output
+        "predictions": y_pred_labels[0]
     })
 
 
@@ -57,4 +70,4 @@ def save_fasta_to_file(fasta_content):
     return temp_file.name
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

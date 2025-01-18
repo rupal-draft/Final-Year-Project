@@ -4756,7 +4756,7 @@ def safe_delete(file_path):
         print(f"File {file_path} deleted successfully.")
     except PermissionError:
         print(f"File {file_path} is currently in use. Retrying...")
-        time.sleep(1)  # Wait 1 second before retrying
+        time.sleep(1)
         try:
             os.remove(file_path)  # Try deleting again
             print(f"File {file_path} deleted successfully.")
