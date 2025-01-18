@@ -12,6 +12,10 @@ cors_origin = os.getenv("FLASK_CORS_ORIGIN", "*")
 app = Flask(__name__)
 CORS(app, origins=[cors_origin], methods=["GET", "POST", "OPTIONS"])
 
+import pandas as pd
+from flask import Flask, request, jsonify
+
+
 @app.route('/api/detect-protein', methods=['POST'])
 def detect_protein():
     data = request.json
@@ -26,12 +30,21 @@ def detect_protein():
     pcp_wp(fasta_file_path, output_pcp)
     ser_wp(fasta_file_path, output_ser)
     sep_wp(fasta_file_path, output_sep)
+    df_aac = pd.read_csv(output_aac)
+    df_pcp = pd.read_csv(output_pcp)
+    df_ser = pd.read_csv(output_ser)
+    df_sep = pd.read_csv(output_sep)
+    merged_df = pd.concat([df_aac, df_pcp, df_ser, df_sep], axis=1)
+    merged_output = "merged_output.csv"
+    merged_df.to_csv(merged_output, index=False)
+    os.remove(output_aac)
+    os.remove(output_pcp)
+    os.remove(output_ser)
+    os.remove(output_sep)
     return jsonify({
-        "aac_output": output_aac,
-        "pcp_output": output_pcp,
-        "ser_output": output_ser,
-        "sep_output": output_sep
+        "merged_output": merged_output
     })
+
 
 def convert_to_fasta(sequence, identifier="Protein_1"):
     fasta_format = f">{identifier}\n{sequence}"

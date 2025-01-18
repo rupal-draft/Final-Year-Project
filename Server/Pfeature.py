@@ -1,12 +1,5 @@
-#!/usr/bin/env python
-# coding: utf-8
 
-# In[1]:
-
-
-#!/usr/bin/python
 from __future__ import print_function
-import getopt
 import sys
 import os
 import numpy as np
@@ -14,16 +7,10 @@ import pandas as pd
 import math
 import itertools
 from itertools import repeat
-import argparse
 import csv
 from collections import Counter
 import re
-import glob
 import time
-from time import sleep
-from tqdm import tqdm
-from argparse import RawTextHelpFormatter
-import uuid
 import warnings
 warnings.filterwarnings("ignore") 
 std = list("ACDEFGHIKLMNPQRSTVWY")
@@ -61,7 +48,7 @@ def aac_wp(file,out):
      df = pd.read_csv('tempfile_out')
      df.iloc[:,:-1].to_csv(out,index=None)
      print(df)
-     #os.remove('tempfile_out')
+     #safe_delete('tempfile_out')
      #os.remove('input_sam.csv')
 def aac_nt(file,out,n):
      readseq(file,'input_sam.csv')
@@ -72,7 +59,7 @@ def aac_nt(file,out,n):
      df.columns = 'N'+df.columns
      df.iloc[:,:-1].to_csv(out,index=None)
      os.remove('sam_input.csv')
-     os.remove('tempfile_out')
+     safe_delete('tempfile_out')
      os.remove('input_sam.csv')
 def aac_ct(file,out,c):
      readseq(file,'input_sam.csv')
@@ -83,7 +70,7 @@ def aac_ct(file,out,c):
      df.columns = 'C'+df.columns
      df.iloc[:,:-1].to_csv(out,index=None)
      os.remove('sam_input.csv')
-     os.remove('tempfile_out')
+     safe_delete('tempfile_out')
      os.remove('input_sam.csv')
 def aac_rt(file,out,n,c):
     readseq(file,'input_sam.csv')
@@ -94,7 +81,7 @@ def aac_rt(file,out,n,c):
     df.columns = 'R'+df.columns
     df.iloc[:,:-1].to_csv(out,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def aac_nct(file,out,n):
     readseq(file,'input_sam.csv')
@@ -105,7 +92,7 @@ def aac_nct(file,out,n):
     df.columns = 'NC'+df.columns
     df.iloc[:,:-1].to_csv(out,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def aac_st(file,out,v):
     readseq(file,'input_sam.csv')
@@ -129,7 +116,7 @@ def aac_st(file,out,v):
     df5.columns = head
     df5 = round(df5,2)
     df5.to_csv(out,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('sam_input.csv')
     os.remove('input_sam.csv')
 def dpc_comp(file,q,out):
@@ -163,7 +150,7 @@ def dpc_wp(seq,result_filename,lg):
     dpc_comp('input_sam.csv',lg,'tempfile_out')
     df = pd.read_csv('tempfile_out')
     df.iloc[:,:-1].to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def dpc_nt(seq,result_filename,n,lg):
     readseq(seq,'input_sam.csv')
@@ -174,7 +161,7 @@ def dpc_nt(seq,result_filename,n,lg):
     df.columns = 'N'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def dpc_ct(seq,result_filename,c,lg):
     readseq(seq,'input_sam.csv')
@@ -185,7 +172,7 @@ def dpc_ct(seq,result_filename,c,lg):
     df.columns = 'C'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def dpc_rt(seq,result_filename,n,c,lg):
     readseq(seq,'input_sam.csv')
@@ -196,7 +183,7 @@ def dpc_rt(seq,result_filename,n,c,lg):
     df.columns = 'R'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def dpc_nct(seq,result_filename,n,lg):
     readseq(seq,'input_sam.csv')
@@ -207,14 +194,14 @@ def dpc_nct(seq,result_filename,n,lg):
     df.columns = 'NC'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def dpc_st(seq,result_filename,sp,lg):
     readseq(seq,'input_sam.csv')
     dpc_split('input_sam.csv',lg,sp,'tempfile_out')
     df = pd.read_csv('tempfile_out')
     df.iloc[:,:-1].to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def dpc_split(file,q,n,out):
     filename,file_ext = os.path.splitext(file)
@@ -289,7 +276,7 @@ def tpc_wp(seq,result_filename):
     tpc_comp('input_sam.csv','tempfile_out')
     df = pd.read_csv('tempfile_out')
     df.iloc[:,:-1].to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def tpc_nt(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -300,7 +287,7 @@ def tpc_nt(seq,result_filename,n):
     df.columns = 'N'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def tpc_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
@@ -311,7 +298,7 @@ def tpc_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def tpc_rt(seq,result_filename,n,c):
     readseq(seq,'input_sam.csv')
@@ -322,7 +309,7 @@ def tpc_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def tpc_nct(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -333,7 +320,7 @@ def tpc_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def tpc_st(file,out,v):
     readseq(file,'input_sam.csv')
@@ -357,7 +344,7 @@ def tpc_st(file,out,v):
     df5.columns = head
     df5 = round(df5,2)
     df5.to_csv(out,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('sam_input.csv')
     os.remove('input_sam.csv')
 ###########################atom###############
@@ -477,7 +464,7 @@ def atc_nt(seq,result_filename,n):
     df.columns = 'N'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def atc_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
@@ -488,7 +475,7 @@ def atc_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def atc_rt(seq,result_filename,n,c):
     readseq(seq,'input_sam.csv')
@@ -499,7 +486,7 @@ def atc_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def atc_nct(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -510,7 +497,7 @@ def atc_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def atc_st(file,out,N):
     readseq(file,'input_sam.csv')
@@ -703,7 +690,7 @@ def btc_nt(seq,result_filename,n):
     df.columns = 'N'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def btc_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
@@ -714,7 +701,7 @@ def btc_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def btc_rt(seq,result_filename,n,c):
     readseq(seq,'input_sam.csv')
@@ -725,7 +712,7 @@ def btc_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def btc_nct(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -736,7 +723,7 @@ def btc_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def btc_st(file,out,n) :
     readseq(seq,'input_sam.csv')
@@ -909,7 +896,7 @@ def pcp_nt(seq,result_filename,n):
     df.columns = 'N'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def pcp_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
@@ -920,7 +907,7 @@ def pcp_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def pcp_rt(seq,result_filename,n,c):
     readseq(seq,'input_sam.csv')
@@ -931,7 +918,7 @@ def pcp_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def pcp_nct(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -942,7 +929,7 @@ def pcp_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 ###############################################################################################################################################
 def pcp_st(file,out,v):
@@ -965,7 +952,7 @@ def pcp_st(file,out,v):
     df5.columns = head
     df5 = round(df5,2)
     df5.to_csv(out,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 ###############################RRI#################################
 def RAAC(file,out):
@@ -1013,7 +1000,7 @@ def rri_wp(seq,result_filename):
     RAAC('input_sam.csv','tempfile_out')
     df = pd.read_csv('tempfile_out')
     df.iloc[:,:-1].to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def rri_nt(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -1024,7 +1011,7 @@ def rri_nt(seq,result_filename,n):
     df.columns = 'N'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def rri_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
@@ -1035,7 +1022,7 @@ def rri_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def rri_rt(seq,result_filename,n,c):
     readseq(seq,'input_sam.csv')
@@ -1046,7 +1033,7 @@ def rri_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def rri_nct(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -1057,7 +1044,7 @@ def rri_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def rri_st(file,out,n):
     readseq(file,'input_sam.csv')
@@ -1247,7 +1234,7 @@ def pri_wp(seq,result_filename):
     repeats('input_sam.csv','tempfile_out')
     df = pd.read_csv('tempfile_out')
     df.iloc[:,:-1].to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def pri_nt(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -1258,7 +1245,7 @@ def pri_nt(seq,result_filename,n):
     df.columns = 'N'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def pri_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
@@ -1269,7 +1256,7 @@ def pri_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def pri_rt(seq,result_filename,n,c):
     readseq(seq,'input_sam.csv')
@@ -1280,7 +1267,7 @@ def pri_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def pri_nct(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -1291,7 +1278,7 @@ def pri_nct(seq,result_filename,n):
     df.columns = 'R'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def rri_st(file,out,v):
     readseq(file,'input_sam.csv')
@@ -1313,7 +1300,7 @@ def rri_st(file,out,v):
     df5.columns = head
     df5 = round(df5,2)
     df5.to_csv(out,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 	
 #################################DDOR####################################
@@ -1350,7 +1337,7 @@ def ddr_wp(seq,result_filename):
     DDOR('input_sam.csv','tempfile_out')
     df = pd.read_csv('tempfile_out')
     df.iloc[:,:-1].to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ddr_nt(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -1361,7 +1348,7 @@ def ddr_nt(seq,result_filename,n):
     df.columns = 'N'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ddr_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
@@ -1372,7 +1359,7 @@ def ddr_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ddr_rt(seq,result_filename,n,c):
     readseq(seq,'input_sam.csv')
@@ -1383,7 +1370,7 @@ def ddr_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ddr_nct(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -1394,7 +1381,7 @@ def ddr_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df.iloc[:,:-1].to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ddr_st(file,out,v):
     readseq(file,'input_sam.csv')
@@ -1442,7 +1429,7 @@ def ddr_st(file,out,v):
     df5.columns = head
     df5 = round(df5,2)
     df5.to_csv(out,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 
 ########################Shannon_Entropy Whole protein######################################
@@ -1478,7 +1465,7 @@ def sep_wp(seq,result_filename):
     SE('input_sam.csv','tempfile_out')
     df = pd.read_csv('tempfile_out')
     df.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def sep_nt(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -1489,7 +1476,7 @@ def sep_nt(seq,result_filename,n):
     df.columns = 'N'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def sep_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
@@ -1500,7 +1487,7 @@ def sep_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def sep_rt(seq,result_filename,n,c):
     readseq(seq,'input_sam.csv')
@@ -1511,7 +1498,7 @@ def sep_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def sep_nct(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -1522,7 +1509,7 @@ def sep_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def sep_st(seq,result_filename,sp):
     readseq(seq,'input_sam.csv')
@@ -1548,7 +1535,7 @@ def SE_split(file,v,out):
     df5.columns = head
     df5 = round(df5,2)
     df5.to_csv(out,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 
 ################################Shannon_Entropy residue#############################################
 def SE_residue_level(filename,out):
@@ -1601,14 +1588,14 @@ def SE_residue_level_split(file,v,out):
     df5.columns = head
     df5 = round(df5,2)
     df5.to_csv(out,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 
 def ser_wp(seq,result_filename):
     readseq(seq,'input_sam.csv')
     SE_residue_level('input_sam.csv','tempfile_out')
     df = pd.read_csv('tempfile_out')
     df.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ser_nt(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -1619,7 +1606,7 @@ def ser_nt(seq,result_filename,n):
     df.columns = 'N'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ser_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
@@ -1630,7 +1617,7 @@ def ser_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ser_rt(seq,result_filename,n,c):
     readseq(seq,'input_sam.csv')
@@ -1641,7 +1628,7 @@ def ser_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ser_nct(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -1652,7 +1639,7 @@ def ser_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ser_st(seq,result_filename,sp):
     readseq(seq,'input_sam.csv')
@@ -1790,7 +1777,7 @@ def shannons_split(file,v,out):
     df5.columns = head
     df5 = round(df5,2)
     df5.to_csv(out,index=None)
-    os.remove('tempfile_out')	
+    safe_delete('tempfile_out')	
 	
 def spc_wp(seq,result_filename):
     readseq(seq,'input_sam.csv')
@@ -1798,7 +1785,7 @@ def spc_wp(seq,result_filename):
     df = pd.read_csv('tempfile_out')
     df = df.round(3)
     df.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def spc_nt(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -1809,7 +1796,7 @@ def spc_nt(seq,result_filename,n):
     df.columns = 'N'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def spc_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
@@ -1820,7 +1807,7 @@ def spc_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def spc_rt(seq,result_filename,n,c):
     readseq(seq,'input_sam.csv')
@@ -1831,7 +1818,7 @@ def spc_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def spc_nct(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -1842,7 +1829,7 @@ def spc_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def spc_st(seq,result_filename,sp):
     readseq(seq,'input_sam.csv')
@@ -1942,14 +1929,14 @@ def autocorr_split(file,v,lg,out):
     df5.columns = head
     df5 = round(df5,2)
     df5.to_csv(out,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 
 def acr_wp(seq,result_filename,lg):
     readseq(seq,'input_sam.csv')
     autocorr_full_aa('input_sam.csv',lg,'tempfile_out')
     df = pd.read_csv('tempfile_out')
     df.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def acr_nt(seq,result_filename,n,lg):
     readseq(seq,'input_sam.csv')
@@ -1960,7 +1947,7 @@ def acr_nt(seq,result_filename,n,lg):
     df.columns = 'N'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def acr_ct(seq,result_filename,c,lg):
     readseq(seq,'input_sam.csv')
@@ -1971,7 +1958,7 @@ def acr_ct(seq,result_filename,c,lg):
     df.columns = 'C'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def acr_rt(seq,result_filename,n,c,lg):
     readseq(seq,'input_sam.csv')
@@ -1982,7 +1969,7 @@ def acr_rt(seq,result_filename,n,c,lg):
     df.columns = 'R'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def acr_nct(seq,result_filename,n,lg):
     readseq(seq,'input_sam.csv')
@@ -1993,7 +1980,7 @@ def acr_nct(seq,result_filename,n,lg):
     df.columns = 'NC'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def acr_st(seq,result_filename,sp,lg):
     readseq(seq,'input_sam.csv')
@@ -2066,7 +2053,7 @@ def paac_nt(seq,result_filename,n,lg,pw):
     df.columns = 'N'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def paac_ct(seq,result_filename,c,lg,pw):
     readseq(seq,'input_sam.csv')
@@ -2077,7 +2064,7 @@ def paac_ct(seq,result_filename,c,lg,pw):
     df.columns = 'C'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def paac_rt(seq,result_filename,n,c,lg,pw):
     readseq(seq,'input_sam.csv')
@@ -2088,7 +2075,7 @@ def paac_rt(seq,result_filename,n,c,lg,pw):
     df.columns = 'R'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def paac_nct(seq,result_filename,n,lg,pw):
     readseq(seq,'input_sam.csv')
@@ -2099,7 +2086,7 @@ def paac_nct(seq,result_filename,n,lg,pw):
     df.columns = 'NC'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def paac_st(seq,result_filename,sp,lg,pw):
     readseq(seq,'input_sam.csv')
@@ -2125,7 +2112,7 @@ def paac_split(file,v,lg,out,w):
     df5.columns = head
     df5 = round(df5,2)
     df5.to_csv(out,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 	
 ######################apaac############################	
 def apaac_1(file,lambdaval,w=0.05):
@@ -2194,7 +2181,7 @@ def apaac_split(file,v,lg,out,w):
     df5.columns = head
     df5 = round(df5,2)
     df5.to_csv(out,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 
 def apaac_wp(seq,result_filename,lg,pw):
     readseq(seq,'input_sam.csv')
@@ -2209,7 +2196,7 @@ def apaac_nt(seq,result_filename,n,lg,pw):
     df.columns = 'N'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def apaac_ct(seq,result_filename,c,lg,pw):
     readseq(seq,'input_sam.csv')
@@ -2220,7 +2207,7 @@ def apaac_ct(seq,result_filename,c,lg,pw):
     df.columns = 'C'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def apaac_rt(seq,result_filename,n,c,lg,pw):
     readseq(seq,'input_sam.csv')
@@ -2231,7 +2218,7 @@ def apaac_rt(seq,result_filename,n,c,lg,pw):
     df.columns = 'R'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def apaac_nct(seq,result_filename,n,lg,pw):
     readseq(seq,'input_sam.csv')
@@ -2242,7 +2229,7 @@ def apaac_nct(seq,result_filename,n,lg,pw):
     df.columns = 'NC'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def apaac_st(seq,result_filename,sp,lg,pw):
     readseq(seq,'input_sam.csv')
@@ -2329,7 +2316,7 @@ def qos_split(file,v,lg,out,w):
     df5.columns = head
     df5 = round(df5,2)
     df5.to_csv(out,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 
 def qos_wp(seq,result_filename,lg,wq):
     readseq(seq,'input_sam.csv')
@@ -2344,7 +2331,7 @@ def qos_nt(seq,result_filename,n,lg,wq):
     df.columns = 'N'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def qos_ct(seq,result_filename,c,lg,wq):
     readseq(seq,'input_sam.csv')
@@ -2355,7 +2342,7 @@ def qos_ct(seq,result_filename,c,lg,wq):
     df.columns = 'C'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def qos_rt(seq,result_filename,n,c,lg,wq):
     readseq(seq,'input_sam.csv')
@@ -2366,7 +2353,7 @@ def qos_rt(seq,result_filename,n,c,lg,wq):
     df.columns = 'R'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def qos_nct(seq,result_filename,n,lg,wq):
     readseq(seq,'input_sam.csv')
@@ -2377,7 +2364,7 @@ def qos_nct(seq,result_filename,n,lg,wq):
     df.columns = 'NC'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def qos_st(seq,result_filename,sp,lg,wq):
     readseq(seq,'input_sam.csv')
@@ -2444,7 +2431,7 @@ def soc_split(file,v,lg,out):
     df5.columns = head
     df5 = round(df5,2)
     df5.to_csv(out,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 
 def soc_wp(seq,result_filename,lg):
     readseq(seq,'input_sam.csv')
@@ -2459,7 +2446,7 @@ def soc_nt(seq,result_filename,n,lg):
     df.columns = 'N'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def soc_ct(seq,result_filename,c,lg):
     readseq(seq,'input_sam.csv')
@@ -2470,7 +2457,7 @@ def soc_ct(seq,result_filename,c,lg):
     df.columns = 'C'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def soc_rt(seq,result_filename,n,c,lg):
     readseq(seq,'input_sam.csv')
@@ -2481,7 +2468,7 @@ def soc_rt(seq,result_filename,n,c,lg):
     df.columns = 'R'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def soc_nct(seq,result_filename,n,lg):
     readseq(seq,'input_sam.csv')
@@ -2492,7 +2479,7 @@ def soc_nct(seq,result_filename,n,lg):
     df.columns = 'NC'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def soc_st(seq,result_filename,sp,lg):
     readseq(seq,'input_sam.csv')
@@ -2597,7 +2584,7 @@ def ctc_split(file,v,out):
     df5.columns = head
     df5 = round(df5,2)
     df5.to_csv(out,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 
 def ctc_wp(seq,result_filename):
     readseq(seq,'input_sam.csv')
@@ -2612,7 +2599,7 @@ def ctc_nt(seq,result_filename,n):
     df.columns = 'N'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ctc_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
@@ -2623,7 +2610,7 @@ def ctc_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ctc_rt(seq,result_filename,n,c):
     readseq(seq,'input_sam.csv')
@@ -2634,7 +2621,7 @@ def ctc_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ctc_nct(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -2645,7 +2632,7 @@ def ctc_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ctc_st(seq,result_filename,sp):
     readseq(seq,'input_sam.csv')
@@ -2844,7 +2831,7 @@ def ctd_split(file,v,out):
     df5.columns = head
     df5 = round(df5,2)
     df5.to_csv(out,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 
 def ctd_wp(seq,result_filename):
     readseq(seq,'input_sam.csv')
@@ -2859,7 +2846,7 @@ def ctd_nt(seq,result_filename,n):
     df.columns = 'N'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ctd_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
@@ -2870,7 +2857,7 @@ def ctd_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ctd_rt(seq,result_filename,n,c):
     readseq(seq,'input_sam.csv')
@@ -2881,7 +2868,7 @@ def ctd_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ctd_nct(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -2892,7 +2879,7 @@ def ctd_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df.to_csv(result_filename,index=None)
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def ctd_st(seq,result_filename,sp):
     readseq(seq,'input_sam.csv')
@@ -3371,7 +3358,7 @@ def aab_split(file,n,out):
         print(','.join(fob_1[each:each+n]).replace(",\n,",",").replace("\n",""))
     ff1.truncate()
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 
 def bin_di(file,q,out):
     std = list("ACDEFGHIKLMNPQRSTVWY")
@@ -3426,7 +3413,7 @@ def dpb_split(file,n,q,out):
         print(','.join(fob_1[each:each+n]).replace(",\n,",",").replace("\n",""))
     ff1.truncate()
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 
 #########################################Atomic binary###############################
 def atom_bin(file,out) :
@@ -3546,7 +3533,7 @@ def atb_split(file,n,out):
         print(','.join(fob_1[each:each+n]).replace(",\n,",",").replace("\n",""))
     ff1.truncate()
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 
 def bond_bin(file,out) :
     df=pd.read_csv(file,header=None)
@@ -3664,7 +3651,7 @@ def btb_split(file,n,out):
         print(','.join(fob_1[each:each+n]).replace(",\n,",",").replace("\n",""))
     ff1.truncate()
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 
 def pcp_bin(file,out):
     df = pd.read_csv(file, header = None)
@@ -3768,7 +3755,7 @@ def pcb_split(file,n,out):
         print(','.join(fob_1[each:each+n]).replace(",\n,",",").replace("\n",""))
     ff1.truncate()
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 
 def aai_bin(file,out):
     filename, file_extension = os.path.splitext(file)
@@ -3873,7 +3860,7 @@ def aib_split(file,n,out):
         print(','.join(fob_1[each:each+n]).replace(",\n,",",").replace("\n",""))
     ff1.truncate()
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 
 
 def aab_wp(seq,result_filename):
@@ -3882,7 +3869,7 @@ def aab_wp(seq,result_filename):
     df = pd.read_csv('tempfile_out')
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def aab_nt(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -3893,7 +3880,7 @@ def aab_nt(seq,result_filename,n):
     df.columns = 'N'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def aab_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
@@ -3904,7 +3891,7 @@ def aab_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def aab_rt(seq,result_filename,n,c):
     readseq(seq,'input_sam.csv')
@@ -3915,7 +3902,7 @@ def aab_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def aab_nct(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
@@ -3926,7 +3913,7 @@ def aab_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def aab_st(seq,result_filename,sp):
     readseq(seq,'input_sam.csv')
@@ -3944,7 +3931,7 @@ def dpb_wp(seq,result_filename,lg):
     df = pd.read_csv('tempfile_out')
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def dpb_nt(seq,result_filename,n,lg):
     readseq(seq,'input_sam.csv')
@@ -3955,7 +3942,7 @@ def dpb_nt(seq,result_filename,n,lg):
     df.columns = 'N'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def dpb_ct(seq,result_filename,c,lg):
@@ -3967,7 +3954,7 @@ def dpb_ct(seq,result_filename,c,lg):
     df.columns = 'C'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def dpb_rt(seq,result_filename,n,c,lg):
@@ -3979,7 +3966,7 @@ def dpb_rt(seq,result_filename,n,c,lg):
     df.columns = 'R'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def dpb_nct(seq,result_filename,n,lg):
@@ -3991,7 +3978,7 @@ def dpb_nct(seq,result_filename,n,lg):
     df.columns = 'NC'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def dpb_st(seq,result_filename,sp,lg):
@@ -4001,7 +3988,7 @@ def dpb_st(seq,result_filename,sp,lg):
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
     os.remove('temp_out')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
 def atb_wp(seq,result_filename):
     readseq(seq,'input_sam.csv')
@@ -4010,7 +3997,7 @@ def atb_wp(seq,result_filename):
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
     os.remove('input_sam.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 def atb_nt(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
     file1 = nt('input_sam.csv',n)
@@ -4022,7 +4009,7 @@ def atb_nt(seq,result_filename,n):
     df2.to_csv(result_filename,index=None)
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 def atb_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
     file1 = ct('input_sam.csv',c)
@@ -4032,7 +4019,7 @@ def atb_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def atb_rt(seq,result_filename,n,c):
@@ -4044,7 +4031,7 @@ def atb_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def atb_nct(seq,result_filename,n):
@@ -4056,7 +4043,7 @@ def atb_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def atb_st(seq,result_filename,sp):
@@ -4076,7 +4063,7 @@ def btb_wp(seq,result_filename):
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
     os.remove('input_sam.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 def btb_nt(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
     file1 = nt('input_sam.csv',n)
@@ -4088,7 +4075,7 @@ def btb_nt(seq,result_filename,n):
     df2.to_csv(result_filename,index=None)
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 def btb_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
     file1 = ct('input_sam.csv',c)
@@ -4098,7 +4085,7 @@ def btb_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def btb_rt(seq,result_filename,n,c):
@@ -4110,7 +4097,7 @@ def btb_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def btb_nct(seq,result_filename,n):
@@ -4122,7 +4109,7 @@ def btb_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def btb_st(seq,result_filename,sp):
@@ -4142,7 +4129,7 @@ def pcb_wp(seq,result_filename):
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
     os.remove('input_sam.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 def pcb_nt(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
     file1 = nt('input_sam.csv',n)
@@ -4154,7 +4141,7 @@ def pcb_nt(seq,result_filename,n):
     df2.to_csv(result_filename,index=None)
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 def pcb_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
     file1 = ct('input_sam.csv',c)
@@ -4164,7 +4151,7 @@ def pcb_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def pcb_rt(seq,result_filename,n,c):
@@ -4176,7 +4163,7 @@ def pcb_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def pcb_nct(seq,result_filename,n):
@@ -4188,7 +4175,7 @@ def pcb_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def pcb_st(seq,result_filename,sp):
@@ -4208,7 +4195,7 @@ def aib_wp(seq,result_filename):
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
     os.remove('input_sam.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 def aib_nt(seq,result_filename,n):
     readseq(seq,'input_sam.csv')
     file1 = nt('input_sam.csv',n)
@@ -4220,7 +4207,7 @@ def aib_nt(seq,result_filename,n):
     df2.to_csv(result_filename,index=None)
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
 def aib_ct(seq,result_filename,c):
     readseq(seq,'input_sam.csv')
     file1 = ct('input_sam.csv',c)
@@ -4230,7 +4217,7 @@ def aib_ct(seq,result_filename,c):
     df.columns = 'C'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def aib_rt(seq,result_filename,n,c):
@@ -4242,7 +4229,7 @@ def aib_rt(seq,result_filename,n,c):
     df.columns = 'R'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def aib_nct(seq,result_filename,n):
@@ -4254,7 +4241,7 @@ def aib_nct(seq,result_filename,n):
     df.columns = 'NC'+df.columns
     df2 = df.iloc[:,:-1].fillna('NA')
     df2.to_csv(result_filename,index=None)
-    os.remove('tempfile_out')
+    safe_delete('tempfile_out')
     os.remove('input_sam.csv')
     os.remove('sam_input.csv')
 def aib_st(seq,result_filename,sp):
@@ -4763,5 +4750,16 @@ def readseq(file,out):
 # In[ ]:
 
 
-
+def safe_delete(file_path):
+    try:
+        os.remove(file_path)
+        print(f"File {file_path} deleted successfully.")
+    except PermissionError:
+        print(f"File {file_path} is currently in use. Retrying...")
+        time.sleep(1)  # Wait 1 second before retrying
+        try:
+            os.remove(file_path)  # Try deleting again
+            print(f"File {file_path} deleted successfully.")
+        except PermissionError:
+            print(f"Failed to delete {file_path} after retry.")
 
