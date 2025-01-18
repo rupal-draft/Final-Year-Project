@@ -31,6 +31,7 @@ export default function ProteinDetector() {
     }
     setLoading(false);
     setIsModalOpen(false);
+    setSequence("");
   };
   return (
     <div className="relative">
@@ -79,7 +80,7 @@ export default function ProteinDetector() {
                     value={sequence}
                     onChange={(e) => setSequence(e.target.value)}
                     placeholder="Enter the protein sequence here..."
-                    className="w-full h-32 p-4 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none resize-none"
+                    className="w-full h-32 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none resize-none text-gray-800 bg-white"
                     required
                   />
                   <button
