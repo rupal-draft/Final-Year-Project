@@ -44,6 +44,8 @@ def detect_protein():
     df_ser = pd.read_csv(output_ser)
     df_sep = pd.read_csv(output_sep)
     merged_df = pd.concat([df_aac, df_pcp, df_ser, df_sep], axis=1)
+    merged_output = "merged_output.csv"
+    merged_df.to_csv(merged_output, index=False)
     os.remove(output_aac)
     os.remove(output_pcp)
     os.remove(output_ser)

@@ -1,19 +1,24 @@
-"use client";
-
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
 import HealthyCells from "./../assets/Cellular-Health.jpg";
 import CancerousCells from "./../assets/cancer_dev.jpg";
+import { ChevronDown, ChevronUp, Search } from "lucide-react";
+import proteins from "./../utils/protiens.json";
 
 export default function ProteinDetector() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sequence, setSequence] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedProtein, setSelectedProtein] = useState<string | null>(null);
+  const [uniprotId, setUniprotId] = useState("");
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent | React.MouseEvent) => {
     e.preventDefault();
+    if (!uniprotId) return;
+    const sequence = await fetchProteinSequence(uniprotId);
+    // console.log(sequence);
+    // return;
     setLoading(true);
     try {
       const response = await fetch("http://127.0.0.1:5000/api/detect-protein", {
@@ -27,12 +32,31 @@ export default function ProteinDetector() {
       setResult(data.predictions);
     } catch (error) {
       console.error("Error:", error);
-      setResult("An error occurred while processing the sequence.");
+      setResult("An error occurred while processing the protein.");
     }
     setLoading(false);
-    setIsModalOpen(false);
-    setSequence("");
   };
+  async function fetchProteinSequence(uniprotId: String) {
+    const apiUrl = `https://rest.uniprot.org/uniprotkb/${uniprotId}.fasta`;
+
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const fastaContent = await response.text();
+
+      const fastaLines = fastaContent.split("\n");
+      const sequence = fastaLines.slice(1).join("").replace(/\s+/g, "");
+
+      return sequence;
+    } catch (error) {
+      console.error("Error fetching the protein sequence:", error);
+      return null;
+    }
+  }
+
   return (
     <div className="relative">
       <div className="absolute inset-0 overflow-hidden">
@@ -45,83 +69,124 @@ export default function ProteinDetector() {
       </div>
 
       <div className="relative z-10 flex flex-col items-center justify-center min-h-[60vh]">
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="text-2xl px-12 py-6 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-full transition-all duration-300 hover:scale-105 shadow-lg"
-        >
-          Predict Protein
-        </button>
-      </div>
+        <div className="relative">
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="text-2xl px-12 py-6 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-full transition-all duration-300 hover:scale-105 shadow-lg flex items-center justify-between w-80 h-20"
+          >
+            <span className="truncate">
+              {selectedProtein ? selectedProtein : "Select Protein"}
+            </span>
+            {isDropdownOpen ? (
+              <ChevronUp className="ml-2 h-6 w-6" />
+            ) : (
+              <ChevronDown className="ml-2 h-6 w-6" />
+            )}
+          </button>
 
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className="bg-white rounded-xl shadow-xl max-w-2xl w-full relative overflow-hidden"
-            >
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold text-teal-800">
-                    Enter Protein Sequence
-                  </h2>
-                  <button
-                    onClick={() => setIsModalOpen(false)}
-                    className="text-gray-500 hover:text-gray-700 rounded-full p-1 hover:bg-gray-100 transition-colors"
-                  >
-                    <X className="h-6 w-6" />
-                  </button>
+          <AnimatePresence>
+            {isDropdownOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute mt-2 w-80 bg-white rounded-lg shadow-xl overflow-hidden z-50"
+              >
+                <div className="p-2 border-b">
+                  <div className="relative">
+                    <Search
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search proteins..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-8 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-800"
+                    />
+                  </div>
                 </div>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <textarea
-                    value={sequence}
-                    onChange={(e) => setSequence(e.target.value)}
-                    placeholder="Enter the protein sequence here..."
-                    className="w-full h-32 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none resize-none text-gray-800 bg-white"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                <div className="max-h-60 overflow-y-auto">
+                  {proteins
+                    .filter(
+                      (protein) =>
+                        protein.name
+                          .toLowerCase()
+                          .includes(searchQuery.toLowerCase()) ||
+                        protein.uniprotId
+                          .toLowerCase()
+                          .includes(searchQuery.toLowerCase())
+                    )
+                    .map((protein) => (
+                      <motion.button
+                        key={protein.uniprotId}
+                        onClick={() => {
+                          setSelectedProtein(protein.name);
+                          setIsDropdownOpen(false);
+                          setUniprotId(protein.uniprotId);
+                        }}
+                        className="w-full text-left px-4 py-2 hover:bg-teal-100 transition-colors"
+                        whileHover={{ scale: 1.02, x: 5 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <span className="font-medium text-gray-800">
+                          {protein.name}
+                        </span>
+                        <span className="ml-2 text-sm text-gray-500">
+                          {protein.uniprotId}
+                        </span>
+                      </motion.button>
+                    ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {selectedProtein && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-8"
+          >
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="text-xl px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-full transition-all duration-300 hover:scale-105 shadow-lg flex items-center justify-center"
+            >
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
                   >
-                    {loading ? (
-                      <>
-                        <svg
-                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          />
-                        </svg>
-                        Processing...
-                      </>
-                    ) : (
-                      "Detect Protein"
-                    )}
-                  </button>
-                </form>
-              </div>
-            </motion.div>
-          </div>
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Processing...
+                </>
+              ) : (
+                "Detect Protein"
+              )}
+            </button>
+          </motion.div>
         )}
-      </AnimatePresence>
+      </div>
 
       <AnimatePresence>
         {result && (
@@ -142,7 +207,7 @@ export default function ProteinDetector() {
                 onClick={() => setResult(null)}
                 className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 rounded-full p-1 hover:bg-gray-100 transition-colors"
               >
-                <X className="h-6 w-6" />
+                {/* <X className="h-6 w-6" /> */} {/* X component is missing */}
               </button>
 
               <div className="p-8">
