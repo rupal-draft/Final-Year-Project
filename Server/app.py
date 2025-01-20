@@ -19,7 +19,10 @@ cors_origin = os.getenv("FLASK_CORS_ORIGIN", "*")
 app = Flask(__name__)
 CORS(app, origins=[cors_origin], methods=["GET", "POST", "OPTIONS"])
 
-with open('trained_model.pkl', 'rb') as f:
+# with open('trained_model.pkl', 'rb') as f:
+#     model, trained_columns = pickle.load(f)\
+
+with open('new_trained_model.pkl', 'rb') as f:
     model, trained_columns = pickle.load(f)
 
 
