@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import HealthyCells from "./../assets/Cellular-Health.jpg";
 import CancerousCells from "./../assets/cancer_dev.jpg";
-import { ChevronDown, ChevronUp, Search } from "lucide-react";
-import proteins from "./../utils/protiens.json";
+import { ChevronDown, ChevronUp, Search, X } from "lucide-react";
+import proteins from "./../utils/Protiens.json";
+import { toast } from "react-toastify";
 
 export default function ProteinDetector() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -20,6 +22,7 @@ export default function ProteinDetector() {
     // console.log(sequence);
     // return;
     setLoading(true);
+    toast.loading("Running Random Forest Classifier...");
     try {
       const response = await fetch("http://127.0.0.1:5000/api/detect-protein", {
         method: "POST",
@@ -34,9 +37,10 @@ export default function ProteinDetector() {
       console.error("Error:", error);
       setResult("An error occurred while processing the protein.");
     }
+    toast.dismiss();
     setLoading(false);
   };
-  async function fetchProteinSequence(uniprotId: String) {
+  async function fetchProteinSequence(uniprotId: string) {
     const apiUrl = `https://rest.uniprot.org/uniprotkb/${uniprotId}.fasta`;
 
     try {
@@ -195,6 +199,12 @@ export default function ProteinDetector() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+            onClick={() => {
+              setResult(null);
+              setSelectedProtein(null);
+              setUniprotId("");
+              setSearchQuery("");
+            }}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -204,10 +214,15 @@ export default function ProteinDetector() {
               className="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden"
             >
               <button
-                onClick={() => setResult(null)}
+                onClick={() => {
+                  setResult(null);
+                  setSelectedProtein(null);
+                  setUniprotId("");
+                  setSearchQuery("");
+                }}
                 className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 rounded-full p-1 hover:bg-gray-100 transition-colors"
               >
-                {/* <X className="h-6 w-6" /> */} {/* X component is missing */}
+                <X className="h-6 w-6" />
               </button>
 
               <div className="p-8">
@@ -229,7 +244,7 @@ export default function ProteinDetector() {
                         }}
                         transition={{
                           duration: 1,
-                          repeat: Infinity,
+                          repeat: Number.POSITIVE_INFINITY,
                           repeatType: "reverse",
                         }}
                         className="absolute inset-0 bg-green-500/20 rounded-full blur-xl"
@@ -256,7 +271,7 @@ export default function ProteinDetector() {
                         }}
                         transition={{
                           duration: 1,
-                          repeat: Infinity,
+                          repeat: Number.POSITIVE_INFINITY,
                           repeatType: "reverse",
                         }}
                         className="absolute inset-0 bg-red-500/20 rounded-full blur-xl"
