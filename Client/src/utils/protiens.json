@@ -1,52 +1,77 @@
 [
   {
-    "name": "SuniprotIderoflexin-4",
-    "uniprotId": "Q6P4A7",
-    "Label": "1"
-  },
-  {
-    "name": "Protien BEX2",
-    "uniprotId": "Q9BXY8",
-    "Label": "1"
-  },
-  {
-    "name": "Drebrin",
-    "uniprotId": "Q16643",
-    "Label": "1"
-  },
-  {
-    "name": "Periphilin-1",
-    "uniprotId": "Q8NEY8",
-    "Label": "1"
-  },
-  {
-    "name": "Radial spoke head Protein",
+    "Protein": "Radial spoke head protein",
     "uniprotId": "Q8WYR4",
-    "Label": "1"
+    "Result": "Positive"
   },
   {
-    "name": "Replicase polyprotein 1a",
-    "uniprotId": "A0A7U3MS19",
-    "Label": "0"
+    "Protein": "SuniprotIderoflexin-4",
+    "uniprotId": "Q6P4A7",
+    "Result": "Positive"
   },
   {
-    "name": "Accessory Protein 7b",
-    "uniprotId": "A0A8B1KWJ8",
-    "Label": "0"
+    "Protein": "Protein BEX2",
+    "uniprotId": "Q9BXY8",
+    "Result": "Positive"
   },
   {
-    "name": "Nucleoprotein",
+    "Protein": "Drebrin",
+    "uniprotId": "Q16643",
+    "Result": "Positive"
+  },
+  {
+    "Protein": "Periphilin-1",
+    "uniprotId": "Q8NEY8",
+    "Result": "Positive"
+  },
+  {
+    "Protein": "Tumor protein 63",
+    "uniprotId": "Q9H3D4",
+    "Result": "Positive"
+  },
+  {
+    "Protein": "Catenin beta-1",
+    "uniprotId": "P35222",
+    "Result": "Positive"
+  },
+  {
+    "Protein": "Seizure 6-like protein",
+    "uniprotId": "Q9BYH1",
+    "Result": "Positive"
+  },
+  {
+    "Protein": "Protein Wnt-4",
+    "uniprotId": "P56705",
+    "Result": "Positive"
+  },
+  {
+    "Protein": "Nucleoprotein",
     "uniprotId": "A0A6H2EFQ8",
-    "Label": "1"
+    "Result": "Positive"
   },
   {
-    "name": "ORF3a Protein",
+    "Protein": "ORF3a protein",
     "uniprotId": "A0A7D7CJF6",
-    "Label": "0"
+    "Result": "Negative"
   },
   {
-    "name": "Replicase polyprotein 1a",
+    "Protein": "Replicase polyprotein 1a",
     "uniprotId": "A0A6H2LBH9",
-    "Label": "0"
+    "Result": "Negative"
+  },
+  {
+    "Protein": "Replicase polyprotein 1b",
+    "uniprotId": "A0A7U3MS19",
+    "Result": "Negative"
+  },
+  {
+    "Protein": "Accessory protein 7b",
+    "uniprotId": "A0A8B1KWJ8",
+    "Result": "Negative"
+  },
+  {
+    "Protein": "ORF1ab polyprotein",
+    "uniprotId": "A0A8B6RV19",
+    "Result": "Negative"
   }
 ]

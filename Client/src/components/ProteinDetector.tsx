@@ -116,7 +116,7 @@ export default function ProteinDetector() {
                   {proteins
                     .filter(
                       (protein) =>
-                        protein.name
+                        protein.Protein
                           .toLowerCase()
                           .includes(searchQuery.toLowerCase()) ||
                         protein.uniprotId
@@ -127,7 +127,7 @@ export default function ProteinDetector() {
                       <motion.button
                         key={protein.uniprotId}
                         onClick={() => {
-                          setSelectedProtein(protein.name);
+                          setSelectedProtein(protein.Protein);
                           setIsDropdownOpen(false);
                           setUniprotId(protein.uniprotId);
                         }}
@@ -136,7 +136,7 @@ export default function ProteinDetector() {
                         whileTap={{ scale: 0.98 }}
                       >
                         <span className="font-medium text-gray-800">
-                          {protein.name}
+                          {protein.Protein}
                         </span>
                         <span className="ml-2 text-sm text-gray-500">
                           {protein.uniprotId}
