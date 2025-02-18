@@ -33,5 +33,10 @@ This project focuses on leveraging machine learning techniques to identify essen
 - Insights into potential biomarkers that can aid in early detection and treatment planning.
 - A research framework that can be extended to various types of cancer.
 
+## Video
+[![Video Thumbnail](https://img.youtube.com/vi/dtdeyxGis3w/0.jpg)](https://youtu.be/dtdeyxGis3w)
+
+
 ---
+
 **Disclaimer**: This project is for research purposes only and should not be used for medical diagnosis without professional validation.
