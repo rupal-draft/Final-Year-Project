@@ -37,7 +37,7 @@ export default function App() {
       <div className="container mx-auto px-4 py-16 relative z-10">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-5xl md:text-7xl font-extrabold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-cyan-200 to-indigo-300 drop-shadow-lg">
-            Essential Protein Identification of Cancer Using Machine Learning
+            Essential Protein Identification of Cancer Using Deep Learning
           </h1>
 
           {/* Decorative line */}

@@ -15,8 +15,13 @@ import {
   AlertTriangle,
   ExternalLink,
   Pill,
-  Info,
-  LinkIcon,
+  FileText,
+  Beaker,
+  Atom,
+  Microscope,
+  MicroscopeIcon as Molecule,
+  Thermometer,
+  FlameIcon as Flare,
 } from "lucide-react"
 import proteins from "./../utils/Protiens.json"
 import { toast } from "react-toastify"
@@ -40,16 +45,41 @@ interface ModelMetrics {
   }
 }
 
+interface PubChemSynonym {
+  urn: {
+    datatype: number
+    label: string
+    name?: string
+    release: string
+    software?: string
+    source?: string
+    version?: string
+    implementation?: string
+  }
+  value: {
+    sval?: string
+    ival?: number
+    fval?: number
+    binary?: string
+  }
+}
+
+interface PubChem {
+  cid: number
+  synonyms: PubChemSynonym[]
+}
+
 interface Drug {
   name: string
   drugId: string
   description: string
-  evidence: string[]
+  clinical_trials: string[]
+  pubmed_articles: string[]
+  pubchem: PubChem
 }
 
 interface PositiveResult {
   predictions: string
-  disclaimer: string
   drugs: Drug[]
 }
 
@@ -63,6 +93,8 @@ export default function ProteinDetector(): JSX.Element {
   const [metrics, setMetrics] = useState<ModelMetrics | null>(null)
   const [drugData, setDrugData] = useState<PositiveResult | null>(null)
   const [activeDrugIndex, setActiveDrugIndex] = useState<number | null>(null)
+  const [activeTab, setActiveTab] = useState<string>("overview")
+  const [hoveredProperty, setHoveredProperty] = useState<string | null>(null)
 
   // Refs for animation
   const accuracyCircleRef = useRef<SVGCircleElement | null>(null)
@@ -74,7 +106,6 @@ export default function ProteinDetector(): JSX.Element {
     if (!uniprotId) return
     const sequence = await fetchProteinSequence(uniprotId)
     setLoading(true)
-    toast.loading("Running Binary Classifier...")
     try {
       const response = await fetch("http://127.0.0.1:5000/api/detect-protein", {
         method: "POST",
@@ -159,6 +190,21 @@ export default function ProteinDetector(): JSX.Element {
     }
   }, [metrics])
 
+  // Helper function to get specific PubChem property
+  const getPubChemProperty = (drug: Drug, label: string, name?: string): string | number | null => {
+    if (!drug.pubchem || !drug.pubchem.synonyms) return null
+
+    const synonym = drug.pubchem.synonyms.find((s) => s.urn.label === label && (!name || s.urn.name === name))
+
+    if (!synonym) return null
+
+    if (synonym.value.sval) return synonym.value.sval
+    if (synonym.value.fval !== undefined) return synonym.value.fval
+    if (synonym.value.ival !== undefined) return synonym.value.ival
+
+    return null
+  }
+
   return (
     <div className="relative">
       {/* Enhanced background with DNA animation */}
@@ -219,7 +265,7 @@ export default function ProteinDetector(): JSX.Element {
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Protein Sequence Analysis</h2>
           <p className="text-teal-100/80">
             Select a protein from our database to analyze its sequence and determine cancer risk factors using our
-            advanced machine learning model.
+            advanced deep learning model.
           </p>
         </motion.div>
 
@@ -1023,39 +1069,28 @@ export default function ProteinDetector(): JSX.Element {
                     <div className="absolute -inset-1 bg-gradient-to-r from-red-400 to-amber-400 rounded-2xl blur opacity-20"></div>
                     <div className="relative bg-white rounded-2xl shadow-xl overflow-hidden border border-red-100">
                       <div className="p-6 md:p-8 bg-gradient-to-r from-red-50 to-amber-50">
-                        <h3 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                        <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
                           <Pill className="mr-2 h-6 w-6 text-red-600" />
                           Potential Drug Repurposing Options
                         </h3>
 
-                        {/* Disclaimer */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 1.1 }}
-                          className="mb-8 p-4 bg-amber-50 border border-amber-200 rounded-xl"
-                        >
-                          <div className="flex items-start">
-                            <Info className="h-5 w-5 text-amber-600 mt-0.5 mr-2 flex-shrink-0" />
-                            <p className="text-sm text-gray-700">{drugData.disclaimer}</p>
-                          </div>
-                        </motion.div>
-
                         {/* Drug Cards */}
-                        <div className="grid grid-cols-1 gap-6">
+                        <div className="grid grid-cols-1 gap-8">
                           {drugData.drugs.map((drug, index) => (
                             <motion.div
                               key={drug.drugId}
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 1.2 + index * 0.1 }}
-                              whileHover={{ scale: 1.01 }}
-                              className={`bg-white rounded-xl shadow-md overflow-hidden border ${
+                              className={`bg-white rounded-xl shadow-lg overflow-hidden border ${
                                 activeDrugIndex === index ? "border-red-300" : "border-gray-200"
                               }`}
-                              onClick={() => setActiveDrugIndex(activeDrugIndex === index ? null : index)}
                             >
-                              <div className="p-6">
+                              {/* Drug Header */}
+                              <div
+                                className="p-6 cursor-pointer"
+                                onClick={() => setActiveDrugIndex(activeDrugIndex === index ? null : index)}
+                              >
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center">
                                     <div className="relative mr-4">
@@ -1076,57 +1111,477 @@ export default function ProteinDetector(): JSX.Element {
                                     <ChevronDown className="h-6 w-6 text-gray-400" />
                                   </motion.div>
                                 </div>
+                                <p className="mt-3 text-gray-700">{drug.description}</p>
+                              </div>
 
-                                <AnimatePresence>
-                                  {activeDrugIndex === index && (
-                                    <motion.div
-                                      initial={{ opacity: 0, height: 0 }}
-                                      animate={{ opacity: 1, height: "auto" }}
-                                      exit={{ opacity: 0, height: 0 }}
-                                      transition={{ duration: 0.3 }}
-                                      className="overflow-hidden"
-                                    >
-                                      <div className="pt-4 mt-4 border-t border-gray-100">
-                                        <p className="text-gray-700 mb-4">{drug.description}</p>
+                              {/* Drug Details */}
+                              <AnimatePresence>
+                                {activeDrugIndex === index && (
+                                  <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="overflow-hidden border-t border-gray-100"
+                                  >
+                                    {/* Tabs */}
+                                    <div className="bg-gray-50 px-6 py-3 border-b border-gray-100">
+                                      <div className="flex space-x-2 overflow-x-auto">
+                                        <button
+                                          onClick={() => setActiveTab("overview")}
+                                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                            activeTab === "overview"
+                                              ? "bg-red-100 text-red-700"
+                                              : "text-gray-600 hover:bg-gray-200"
+                                          }`}
+                                        >
+                                          Overview
+                                        </button>
+                                        <button
+                                          onClick={() => setActiveTab("chemical")}
+                                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                            activeTab === "chemical"
+                                              ? "bg-red-100 text-red-700"
+                                              : "text-gray-600 hover:bg-gray-200"
+                                          }`}
+                                        >
+                                          Chemical Data
+                                        </button>
+                                        <button
+                                          onClick={() => setActiveTab("research")}
+                                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                            activeTab === "research"
+                                              ? "bg-red-100 text-red-700"
+                                              : "text-gray-600 hover:bg-gray-200"
+                                          }`}
+                                        >
+                                          Research
+                                        </button>
+                                      </div>
+                                    </div>
 
-                                        <h5 className="font-semibold text-gray-800 mb-2 flex items-center">
-                                          <LinkIcon className="h-4 w-4 mr-1 text-red-500" />
-                                          Evidence & Research
-                                        </h5>
+                                    {/* Tab Content */}
+                                    <div className="p-6">
+                                      {/* Overview Tab */}
+                                      {activeTab === "overview" && (
+                                        <motion.div
+                                          initial={{ opacity: 0 }}
+                                          animate={{ opacity: 1 }}
+                                          exit={{ opacity: 0 }}
+                                          className="space-y-6"
+                                        >
+                                          <div className="flex flex-col md:flex-row gap-6">
+                                            {/* Molecular Structure */}
+                                            <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                              <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                                                <Molecule className="h-4 w-4 mr-2 text-red-500" />
+                                                Molecular Structure
+                                              </h5>
+                                              <div className="aspect-square bg-white rounded-lg flex items-center justify-center p-4 border border-gray-100">
+                                                <img
+                                                  src={`https://pubchem.ncbi.nlm.nih.gov/image/imgsrv.fcgi?cid=${drug.pubchem.cid}&t=l`}
+                                                  alt={`${drug.name} structure`}
+                                                  className="max-w-full max-h-full object-contain"
+                                                />
+                                              </div>
+                                              <p className="text-xs text-center mt-2 text-gray-500">
+                                                PubChem CID: {drug.pubchem.cid}
+                                              </p>
+                                            </div>
 
-                                        <div className="space-y-2">
-                                          {drug.evidence.map((link, i) => (
+                                            {/* Key Properties */}
+                                            <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                              <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                                                <Beaker className="h-4 w-4 mr-2 text-red-500" />
+                                                Key Properties
+                                              </h5>
+                                              <div className="space-y-3">
+                                                {/* Molecular Formula */}
+                                                <div
+                                                  className="bg-white p-3 rounded-lg border border-gray-100 transition-colors hover:bg-red-50"
+                                                  onMouseEnter={() => setHoveredProperty("formula")}
+                                                  onMouseLeave={() => setHoveredProperty(null)}
+                                                >
+                                                  <div className="flex justify-between items-center">
+                                                    <span className="text-sm text-gray-600">Molecular Formula</span>
+                                                    <motion.span
+                                                      className="font-mono text-sm font-semibold text-red-600"
+                                                      animate={{
+                                                        scale: hoveredProperty === "formula" ? 1.05 : 1,
+                                                        color: hoveredProperty === "formula" ? "#dc2626" : "#dc2626cc",
+                                                      }}
+                                                    >
+                                                      {getPubChemProperty(drug, "Molecular Formula") as string}
+                                                    </motion.span>
+                                                  </div>
+                                                </div>
+
+                                                {/* Molecular Weight */}
+                                                <div
+                                                  className="bg-white p-3 rounded-lg border border-gray-100 transition-colors hover:bg-red-50"
+                                                  onMouseEnter={() => setHoveredProperty("weight")}
+                                                  onMouseLeave={() => setHoveredProperty(null)}
+                                                >
+                                                  <div className="flex justify-between items-center">
+                                                    <span className="text-sm text-gray-600">Molecular Weight</span>
+                                                    <motion.span
+                                                      className="font-mono text-sm font-semibold text-red-600"
+                                                      animate={{
+                                                        scale: hoveredProperty === "weight" ? 1.05 : 1,
+                                                        color: hoveredProperty === "weight" ? "#dc2626" : "#dc2626cc",
+                                                      }}
+                                                    >
+                                                      {getPubChemProperty(drug, "Molecular Weight") as string} g/mol
+                                                    </motion.span>
+                                                  </div>
+                                                </div>
+
+                                                {/* Log P */}
+                                                <div
+                                                  className="bg-white p-3 rounded-lg border border-gray-100 transition-colors hover:bg-red-50"
+                                                  onMouseEnter={() => setHoveredProperty("logp")}
+                                                  onMouseLeave={() => setHoveredProperty(null)}
+                                                >
+                                                  <div className="flex justify-between items-center">
+                                                    <span className="text-sm text-gray-600">Log P</span>
+                                                    <motion.span
+                                                      className="font-mono text-sm font-semibold text-red-600"
+                                                      animate={{
+                                                        scale: hoveredProperty === "logp" ? 1.05 : 1,
+                                                        color: hoveredProperty === "logp" ? "#dc2626" : "#dc2626cc",
+                                                      }}
+                                                    >
+                                                      {getPubChemProperty(drug, "Log P") ||
+                                                        getPubChemProperty(drug, "Log P", "XLogP3") ||
+                                                        getPubChemProperty(drug, "Log P", "XLogP3-AA")}
+                                                    </motion.span>
+                                                  </div>
+                                                </div>
+
+                                                {/* Hydrogen Bond Acceptors */}
+                                                <div
+                                                  className="bg-white p-3 rounded-lg border border-gray-100 transition-colors hover:bg-red-50"
+                                                  onMouseEnter={() => setHoveredProperty("acceptors")}
+                                                  onMouseLeave={() => setHoveredProperty(null)}
+                                                >
+                                                  <div className="flex justify-between items-center">
+                                                    <span className="text-sm text-gray-600">H-Bond Acceptors</span>
+                                                    <motion.span
+                                                      className="font-mono text-sm font-semibold text-red-600"
+                                                      animate={{
+                                                        scale: hoveredProperty === "acceptors" ? 1.05 : 1,
+                                                        color:
+                                                          hoveredProperty === "acceptors" ? "#dc2626" : "#dc2626cc",
+                                                      }}
+                                                    >
+                                                      {getPubChemProperty(drug, "Count", "Hydrogen Bond Acceptor")}
+                                                    </motion.span>
+                                                  </div>
+                                                </div>
+
+                                                {/* Hydrogen Bond Donors */}
+                                                <div
+                                                  className="bg-white p-3 rounded-lg border border-gray-100 transition-colors hover:bg-red-50"
+                                                  onMouseEnter={() => setHoveredProperty("donors")}
+                                                  onMouseLeave={() => setHoveredProperty(null)}
+                                                >
+                                                  <div className="flex justify-between items-center">
+                                                    <span className="text-sm text-gray-600">H-Bond Donors</span>
+                                                    <motion.span
+                                                      className="font-mono text-sm font-semibold text-red-600"
+                                                      animate={{
+                                                        scale: hoveredProperty === "donors" ? 1.05 : 1,
+                                                        color: hoveredProperty === "donors" ? "#dc2626" : "#dc2626cc",
+                                                      }}
+                                                    >
+                                                      {getPubChemProperty(drug, "Count", "Hydrogen Bond Donor")}
+                                                    </motion.span>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          {/* SMILES and InChI */}
+                                          <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                            <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                                              <Atom className="h-4 w-4 mr-2 text-red-500" />
+                                              Chemical Identifiers
+                                            </h5>
+                                            <div className="space-y-3">
+                                              {/* SMILES */}
+                                              <div className="bg-white p-3 rounded-lg border border-gray-100">
+                                                <div className="flex items-start">
+                                                  <span className="text-sm font-medium text-gray-600 min-w-24">
+                                                    SMILES:
+                                                  </span>
+                                                  <motion.span
+                                                    className="font-mono text-xs text-gray-800 break-all"
+                                                    whileHover={{ color: "#dc2626" }}
+                                                  >
+                                                    {getPubChemProperty(drug, "SMILES", "Canonical") as string}
+                                                  </motion.span>
+                                                </div>
+                                              </div>
+
+                                              {/* InChI */}
+                                              <div className="bg-white p-3 rounded-lg border border-gray-100">
+                                                <div className="flex items-start">
+                                                  <span className="text-sm font-medium text-gray-600 min-w-24">
+                                                    InChI:
+                                                  </span>
+                                                  <motion.span
+                                                    className="font-mono text-xs text-gray-800 break-all"
+                                                    whileHover={{ color: "#dc2626" }}
+                                                  >
+                                                    {getPubChemProperty(drug, "InChI", "Standard") as string}
+                                                  </motion.span>
+                                                </div>
+                                              </div>
+
+                                              {/* InChIKey */}
+                                              <div className="bg-white p-3 rounded-lg border border-gray-100">
+                                                <div className="flex items-start">
+                                                  <span className="text-sm font-medium text-gray-600 min-w-24">
+                                                    InChIKey:
+                                                  </span>
+                                                  <motion.span
+                                                    className="font-mono text-xs text-gray-800"
+                                                    whileHover={{ color: "#dc2626" }}
+                                                  >
+                                                    {getPubChemProperty(drug, "InChIKey", "Standard") as string}
+                                                  </motion.span>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </motion.div>
+                                      )}
+
+                                      {/* Chemical Data Tab */}
+                                      {activeTab === "chemical" && (
+                                        <motion.div
+                                          initial={{ opacity: 0 }}
+                                          animate={{ opacity: 1 }}
+                                          exit={{ opacity: 0 }}
+                                          className="space-y-6"
+                                        >
+                                          {/* Chemical Properties */}
+                                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {/* Physical Properties */}
+                                            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                              <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                                                <Thermometer className="h-4 w-4 mr-2 text-red-500" />
+                                                Physical Properties
+                                              </h5>
+                                              <div className="space-y-2">
+                                                {/* Complexity */}
+                                                <div className="bg-white p-3 rounded-lg border border-gray-100">
+                                                  <div className="flex justify-between items-center">
+                                                    <span className="text-sm text-gray-600">Complexity</span>
+                                                    <motion.div
+                                                      className="flex items-center"
+                                                      whileHover={{ scale: 1.05 }}
+                                                    >
+                                                      <span className="font-mono text-sm font-semibold text-red-600">
+                                                        {getPubChemProperty(drug, "Compound Complexity")}
+                                                      </span>
+                                                    </motion.div>
+                                                  </div>
+                                                </div>
+
+                                                {/* Polar Surface Area */}
+                                                <div className="bg-white p-3 rounded-lg border border-gray-100">
+                                                  <div className="flex justify-between items-center">
+                                                    <span className="text-sm text-gray-600">Polar Surface Area</span>
+                                                    <motion.div
+                                                      className="flex items-center"
+                                                      whileHover={{ scale: 1.05 }}
+                                                    >
+                                                      <span className="font-mono text-sm font-semibold text-red-600">
+                                                        {getPubChemProperty(drug, "Topological", "Polar Surface Area")}{" "}
+                                                        Å²
+                                                      </span>
+                                                    </motion.div>
+                                                  </div>
+                                                </div>
+
+                                                {/* Rotatable Bonds */}
+                                                <div className="bg-white p-3 rounded-lg border border-gray-100">
+                                                  <div className="flex justify-between items-center">
+                                                    <span className="text-sm text-gray-600">Rotatable Bonds</span>
+                                                    <motion.div
+                                                      className="flex items-center"
+                                                      whileHover={{ scale: 1.05 }}
+                                                    >
+                                                      <span className="font-mono text-sm font-semibold text-red-600">
+                                                        {getPubChemProperty(drug, "Count", "Rotatable Bond")}
+                                                      </span>
+                                                    </motion.div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            {/* IUPAC Names */}
+                                            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                              <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                                                <FileText className="h-4 w-4 mr-2 text-red-500" />
+                                                IUPAC Names
+                                              </h5>
+                                              <div className="space-y-2">
+                                                {/* Preferred */}
+                                                <div className="bg-white p-3 rounded-lg border border-gray-100">
+                                                  <div className="flex flex-col">
+                                                    <span className="text-sm text-gray-600 mb-1">Preferred</span>
+                                                    <motion.span
+                                                      className="font-mono text-xs text-gray-800 break-all"
+                                                      whileHover={{ color: "#dc2626" }}
+                                                    >
+                                                      {getPubChemProperty(drug, "IUPAC Name", "Preferred") as string}
+                                                    </motion.span>
+                                                  </div>
+                                                </div>
+
+                                                {/* Traditional */}
+                                                <div className="bg-white p-3 rounded-lg border border-gray-100">
+                                                  <div className="flex flex-col">
+                                                    <span className="text-sm text-gray-600 mb-1">Traditional</span>
+                                                    <motion.span
+                                                      className="font-mono text-xs text-gray-800 break-all"
+                                                      whileHover={{ color: "#dc2626" }}
+                                                    >
+                                                      {getPubChemProperty(drug, "IUPAC Name", "Traditional") as string}
+                                                    </motion.span>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          {/* 3D Viewer */}
+                                          <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                            <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                                              <Flare className="h-4 w-4 mr-2 text-red-500" />
+                                              3D Structure Viewer
+                                            </h5>
+                                            <div className="aspect-video bg-white rounded-lg flex items-center justify-center p-4 border border-gray-100">
+                                              <iframe
+                                                src={`https://pubchem.ncbi.nlm.nih.gov/compound/${drug.pubchem.cid}#section=3D-Conformer&embed=true`}
+                                                className="w-full h-full rounded-lg"
+                                                title={`${drug.name} 3D Structure`}
+                                              ></iframe>
+                                            </div>
+                                          </div>
+                                        </motion.div>
+                                      )}
+
+                                      {/* Research Tab */}
+                                      {activeTab === "research" && (
+                                        <motion.div
+                                          initial={{ opacity: 0 }}
+                                          animate={{ opacity: 1 }}
+                                          exit={{ opacity: 0 }}
+                                          className="space-y-6"
+                                        >
+                                          {/* PubMed Articles */}
+                                          <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                            <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                                              <FileText className="h-4 w-4 mr-2 text-red-500" />
+                                              Recent PubMed Articles
+                                            </h5>
+                                            <div className="space-y-2">
+                                              {drug.pubmed_articles.map((article, i) => (
+                                                <motion.a
+                                                  key={i}
+                                                  href={article}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="block bg-white p-3 rounded-lg border border-gray-100 hover:bg-red-50 transition-colors"
+                                                  whileHover={{ x: 5, borderColor: "#f87171" }}
+                                                >
+                                                  <div className="flex items-center">
+                                                    <ExternalLink className="h-4 w-4 mr-2 text-red-500 flex-shrink-0" />
+                                                    <span className="text-sm text-gray-700 truncate">{article}</span>
+                                                  </div>
+                                                </motion.a>
+                                              ))}
+                                              {drug.pubmed_articles.length === 0 && (
+                                                <div className="bg-white p-3 rounded-lg border border-gray-100 text-center">
+                                                  <span className="text-sm text-gray-500">
+                                                    No PubMed articles available
+                                                  </span>
+                                                </div>
+                                              )}
+                                            </div>
+                                          </div>
+
+                                          {/* Clinical Trials */}
+                                          <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                            <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                                              <Microscope className="h-4 w-4 mr-2 text-red-500" />
+                                              Clinical Trials
+                                            </h5>
+                                            <div className="space-y-2">
+                                              {drug.clinical_trials.map((trial, i) => (
+                                                <motion.a
+                                                  key={i}
+                                                  href={trial}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="block bg-white p-3 rounded-lg border border-gray-100 hover:bg-red-50 transition-colors"
+                                                  whileHover={{ x: 5, borderColor: "#f87171" }}
+                                                >
+                                                  <div className="flex items-center">
+                                                    <ExternalLink className="h-4 w-4 mr-2 text-red-500 flex-shrink-0" />
+                                                    <span className="text-sm text-gray-700 truncate">{trial}</span>
+                                                  </div>
+                                                </motion.a>
+                                              ))}
+                                              {drug.clinical_trials.length === 0 && (
+                                                <div className="bg-white p-3 rounded-lg border border-gray-100 text-center">
+                                                  <span className="text-sm text-gray-500">
+                                                    No clinical trials available
+                                                  </span>
+                                                </div>
+                                              )}
+                                            </div>
+                                          </div>
+
+                                          {/* PubChem Link */}
+                                          <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                            <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
+                                              <Beaker className="h-4 w-4 mr-2 text-red-500" />
+                                              Additional Resources
+                                            </h5>
                                             <motion.a
-                                              key={i}
-                                              href={link.startsWith("http") ? link : "#"}
+                                              href={`https://pubchem.ncbi.nlm.nih.gov/compound/${drug.pubchem.cid}`}
                                               target="_blank"
                                               rel="noopener noreferrer"
-                                              className={`flex items-center p-2 rounded-lg ${
-                                                link.startsWith("http")
-                                                  ? "bg-red-50 hover:bg-red-100 text-red-700"
-                                                  : "bg-gray-50 text-gray-700"
-                                              } transition-colors`}
-                                              whileHover={{ x: 5 }}
+                                              className="block bg-white p-4 rounded-lg border border-gray-100 hover:bg-red-50 transition-colors"
+                                              whileHover={{ scale: 1.02, borderColor: "#f87171" }}
                                             >
-                                              {link.startsWith("http") ? (
-                                                <>
-                                                  <ExternalLink className="h-4 w-4 mr-2 flex-shrink-0" />
-                                                  <span className="text-sm truncate">{link}</span>
-                                                </>
-                                              ) : (
-                                                <>
-                                                  <Info className="h-4 w-4 mr-2 flex-shrink-0" />
-                                                  <span className="text-sm">{link}</span>
-                                                </>
-                                              )}
+                                              <div className="flex items-center justify-between">
+                                                <div className="flex items-center">
+                                                  <img
+                                                    src="https://pubchem.ncbi.nlm.nih.gov/favicon.ico"
+                                                    alt="PubChem"
+                                                    className="w-5 h-5 mr-2"
+                                                  />
+                                                  <span className="text-sm font-medium text-gray-800">
+                                                    View on PubChem
+                                                  </span>
+                                                </div>
+                                                <ExternalLink className="h-4 w-4 text-red-500" />
+                                              </div>
                                             </motion.a>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
-                              </div>
+                                          </div>
+                                        </motion.div>
+                                      )}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
                             </motion.div>
                           ))}
                         </div>
@@ -1176,9 +1631,6 @@ export default function ProteinDetector(): JSX.Element {
             </div>
           </motion.div>
         )}
-
-      {/* Add DNA animation keyframes */}
-
     </div>
   )
 }

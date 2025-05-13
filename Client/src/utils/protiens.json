@@ -15,11 +15,6 @@
       "Result": "Positive"
     },
     {
-      "Protein": "Collagen alpha-1(I) chain",
-      "uniprotId": "P02452",
-      "Result": "Positive"
-    },
-    {
       "Protein": "Cystine/glutamate transporter",
       "uniprotId": "Q9UPY5",
       "Result": "Positive"
@@ -1437,11 +1432,6 @@
       {
         "Protein": "Coiled-coil domain-containing protein 85C",
         "uniprotId": "A6NKD9",
-        "Result": "Negative"
-      },
-      {
-        "Protein": "SAC3 domain-containing protein 1",
-        "uniprotId": "A6NKF1",
         "Result": "Negative"
       },
       {
