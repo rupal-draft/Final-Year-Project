@@ -1,42 +1,122 @@
-# Cancer Research: Identifying Essential Proteins for Cancer Using Machine Learning
+# Identification of Essential Proteins of Cancer Using Deep Learning
 
 ## Overview
-This project focuses on leveraging machine learning techniques to identify essential proteins related to cancer. The goal is to analyze datasets, apply feature selection methods, and build predictive models to enhance cancer diagnosis and prognosis.
 
-## Objectives
-- Identify key proteins associated with cancer.
-- Develop machine learning models to predict cancer-related patterns.
-- Apply statistical and feature selection techniques for data analysis.
-- Interpret results to provide insights into potential cancer biomarkers.
-
-## Technologies Used
-- **Programming Languages**: Python (Pandas, NumPy, Scikit-learn)
-- **Data Processing**: Clinical and demographic datasets
-- **Machine Learning Techniques**: Supervised learning, Unsupervised learning, Feature selection
-- **Feature Engineering**: Amino acid composition, Shannon entropy, physiochemical properties
-- **Visualization Tools**: Matplotlib, Seaborn, Plotly
-
-## Data Sources
-- Publicly available datasets from **cancer research repositories**.
-- Preprocessed and raw clinical data for model training and validation.
-
-## Methodology
-1. **Data Collection**: Gather relevant clinical and protein datasets.
-2. **Data Preprocessing**: Normalize, clean, and structure data for analysis.
-3. **Feature Selection**: Apply techniques like Principal Component Analysis (PCA), Recursive Feature Elimination (RFE), statistical correlation, and domain-specific features such as amino acid composition and Shannon entropy.
-4. **Model Training**: Train ML models for classification and prediction.
-5. **Model Evaluation**: Use accuracy, precision, recall, and F1-score for performance assessment.
-6. **Interpretation & Insights**: Identify significant proteins and validate findings.
-
-## Expected Outcomes
-- A trained machine learning model capable of predicting cancer-related proteins.
-- Insights into potential biomarkers that can aid in early detection and treatment planning.
-- A research framework that can be extended to various types of cancer.
-
-## Video
-[![Video Thumbnail](https://img.youtube.com/vi/dtdeyxGis3w/0.jpg)](https://youtu.be/dtdeyxGis3w)
-
+This project focuses on the identification of **essential proteins related to cancer** using deep learning techniques. The approach combines sequence-based features, entropy metrics, and protein-protein interaction network analysis to classify whether a given protein plays a crucial role in cancer development.
 
 ---
 
-**Disclaimer**: This project is for research purposes only and should not be used for medical diagnosis without professional validation.
+## Workflow Summary
+
+1. **Input**: UniProt ID of a human protein
+2. **Feature Extraction**:
+   - Sequence-based and physicochemical features using **Pfeature**
+   - Shannon entropy and residue-wise entropy
+   - Centrality features from interaction networks
+3. **Modeling**: Deep learning classification using **TensorFlow/Keras**
+4. **Prediction Output**:
+   - Label: Essential (1) or Non-essential (0)
+   - If essential, retrieves related drugs and supporting web links
+
+---
+
+## Feature Extraction
+
+- **Tool Used**: [Pfeature](https://webs.iiitd.edu.in/raghava/pfeature/)
+- **Features Extracted**:
+  - Amino Acid Composition
+  - Physicochemical Properties
+  - Shannon Entropy
+  - Shannon Entropy by Residue
+  - Network Centrality Measures:
+    - Degree Centrality
+    - Betweenness Centrality
+    - Closeness Centrality
+    - Eigenvector Centrality
+
+---
+
+## Network Analysis Tools
+
+Instead of NetworkX, we used Cytoscape-based tools:
+
+- **Cytoscape**: Visualization and network management
+- **CytoNCA**: For centrality calculations
+- **StringApp**: To import interaction data from the STRING database
+
+---
+
+## Model Architecture
+
+- Framework: TensorFlow/PyTorch
+- Optimizer: **Adam**
+- Loss Function: Binary Crossentropy
+- Metrics: Accuracy, AUC-ROC
+
+---
+
+## Evaluation Metrics
+
+- **Confusion Matrix**:
+  - TP (True Positives)
+  - FP (False Positives)
+  - TN (True Negatives)
+  - FN (False Negatives)
+- **ROC Curve**: Receiver Operating Characteristic
+- **AUC**: Area Under Curve
+- **False Positive Rate**
+- **Precision**, **Recall**, **F1 Score**
+
+---
+## 📊 Model Visualizations
+
+### 1. ROC Curve
+![ROC Curve](images/roc_curve.png)
+
+### 2. Precision-Recall Curve
+![Precision-Recall Curve](images/precision_recall_curve.png)
+
+### 3. Confusion Matrix
+![Confusion Matrix](images/confusion_matrix.png)
+
+### 4. Loss vs Epochs
+![Loss vs Epochs](images/loss_vs_epochs.png)
+
+---
+## Why These Features?
+
+These features were chosen based on biological significance and computational relevance:
+
+- **Sequence-based features** capture amino acid patterns
+- **Shannon entropy** reflects sequence complexity
+- **Centrality metrics** represent the protein’s role in interaction networks
+- These factors are critical in determining protein essentiality in cancer pathways
+
+---
+
+## How Shannon Entropy Helps
+
+Shannon entropy measures the randomness in a protein sequence. Proteins with high entropy may have diverse functional regions, suggesting essential biological roles. Residue-wise entropy helps to pinpoint variability at specific positions in the sequence.
+
+---
+
+## Tools and Libraries Used
+
+- Python
+- TensorFlow / Keras
+- Pfeature
+- Cytoscape + CytoNCA + StringApp
+- Pandas, NumPy, Scikit-learn
+- Matplotlib / Seaborn (for visualization)
+
+---
+
+## Future Directions
+
+- Expand dataset with more diverse cancer types  
+- Integrate 3D structural and expression data  
+- Add interpretability tools to explain model predictions  
+- Link predictions with clinical drug response data
+
+---
+
