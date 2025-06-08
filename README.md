@@ -20,6 +20,33 @@ This project focuses on the identification of **essential proteins related to ca
 
 ---
 
+## 🔄 System Architecture Diagram
+This diagram shows the entire pipeline—from the user input, through feature extraction, model inference, and external API integration (UniProt, PubChem, etc.), to the final result presentation.
+
+![System Architecture Diagram](Diagrams/system_architecture_diagram.svg)
+
+## 🧑‍💼 Use Case Diagram
+
+This illustrates all user interactions, including protein prediction, drug retrieval, and literature or trial lookup.
+
+![Use Case Diagram](Diagrams/use_case_diagram.png)
+
+## 🧭 Activity Diagram
+
+This shows the step-by-step flow from data submission to final prediction and output visualization, including key branching decisions.
+
+![Activity Diagram](Diagrams/activity_diagram.png)
+
+## 🧬 Entity Relationship Diagram (ERD)
+
+The ERD models key datasets—Proteins, Drugs, Clinical Trials, Prediction Results, and their relationships. It's useful for understanding the underlying database structure.
+
+![Entity Relationship Diagram](Diagrams/ER_Diagram.png)
+
+## Screen Design Layout Constraint
+
+![Screen Design Layout Constraint](Diagrams/Screen.png)
+
 ## Feature Extraction
 
 - **Tool Used**: [Pfeature](https://webs.iiitd.edu.in/raghava/pfeature/)
@@ -113,9 +140,9 @@ Shannon entropy measures the randomness in a protein sequence. Proteins with hig
 
 ## Future Directions
 
-- Expand dataset with more diverse cancer types  
-- Integrate 3D structural and expression data  
-- Add interpretability tools to explain model predictions  
+- Expand dataset with more diverse cancer types
+- Integrate 3D structural and expression data
+- Add interpretability tools to explain model predictions
 - Link predictions with clinical drug response data
 
 ---
