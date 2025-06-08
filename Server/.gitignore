@@ -1,3 +1,4 @@
 .env
 tempfile_out
 _pycache_
+.idea

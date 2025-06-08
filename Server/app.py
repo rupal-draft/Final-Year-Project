@@ -99,30 +99,6 @@ def detect_protein():
     logger.info(y_pred_label)
     if y_pred_label == "NEGATIVE":
         return jsonify({"predictions": y_pred_label})
-    # try:
-    #     drug_ids = reporter.get_drug_ids(uniportId)
-    #     if not drug_ids:
-    #         return jsonify({
-    #             "predictions": y_pred_label,
-    #             "message": "No drug information found for this UniProt ID."
-    #         })
-
-    #     gemini_result = reporter.generate_report(drug_ids)
-    #     drugs_json = reporter.extract_json_from_markdown(gemini_result)
-    #     disclaimer = reporter.extract_disclaimer(gemini_result)
-
-    #     return jsonify({
-    #         "predictions": y_pred_label,
-    #         "drugs": drugs_json,
-    #         "disclaimer": disclaimer
-    #     })
-
-    # except Exception as e:
-    #     logger.error(f"Error in Gemini or CSV processing: {str(e)}")
-    #     return jsonify({
-    #         "predictions": "POSITIVE",
-    #         "error": "An error occurred while fetching drug information."
-    #     }), 500
     try:
         report = reporter.generate_report(uniportId)
 
