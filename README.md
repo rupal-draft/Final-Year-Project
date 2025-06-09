@@ -5,7 +5,14 @@
 This project focuses on the identification of **essential proteins related to cancer** using deep learning techniques. The approach combines sequence-based features, entropy metrics, and protein-protein interaction network analysis to classify whether a given protein plays a crucial role in cancer development.
 
 ---
+## 🎥 Project Demo Video
 
+To see a walkthrough of the system and its capabilities in action, watch the project demo video on YouTube:
+
+[![Watch the video](https://img.youtube.com/vi/VN7mKmYBY60/0.jpg)](https://youtu.be/VN7mKmYBY60?si=o4joYoo7_ltJ6Bwf)
+
+🔗 **[Click here to watch the video](https://youtu.be/VN7mKmYBY60?si=o4joYoo7_ltJ6Bwf)**
+---
 ## Workflow Summary
 
 1. **Input**: UniProt ID of a human protein
